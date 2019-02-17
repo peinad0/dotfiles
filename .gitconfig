@@ -1,0 +1,11 @@
+[user]
+  name = David Peinado
+  email = iampeinado@gmail.com
+
+[core]
+  excludesfile = ~/.gitignore_global
+  editor = vim
+  filemode = false
+  trustctime = false
+    autocrlf = input
+
