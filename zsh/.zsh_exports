@@ -2,11 +2,7 @@
 export SHELL=/bin/zsh
 
 # Default editor
-if [[ -n $SSH_CONNECTION ]]; then
-  export EDITOR='vim'
-else
-  export EDITOR='vim'
-fi
+export EDITOR='vim'
 
 # SSH key
 export SSH_KEY_PATH="~/.ssh/id_rsa"

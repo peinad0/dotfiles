@@ -7,5 +7,7 @@
   editor = vim
   filemode = false
   trustctime = false
-    autocrlf = input
+  autocrlf = input
 
+[push]
+  default = current
