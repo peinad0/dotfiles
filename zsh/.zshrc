@@ -5,7 +5,7 @@ export PATH=$HOME/bin:/usr/local/bin:$PATH
 export ZSH=$HOME/.oh-my-zsh
 
 # ZSH theme to display.
-ZSH_THEME="spaceship"
+ZSH_THEME="agnoster"
 
 # Enable command auto-correction.
 ENABLE_CORRECTION="true"
