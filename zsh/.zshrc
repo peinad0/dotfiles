@@ -30,3 +30,6 @@ SPACESHIP_DOCKER_SHOW=false
 source $ZSH/oh-my-zsh.sh
 source $HOME/.zsh_exports
 source $HOME/.zsh_aliases
+
+# Sourcing needed files
+source $HOME/.functions

@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+USER=$(whoami)
+
 # --------------------------------------------------
 
 # COLORS
@@ -102,7 +104,7 @@ echo -e "         .::::d:?88888888888?::8b::::."
 echo -e "       .:::d8888:?88888888??a888888b:::."
 echo -e "     .:::d8888888a8888888aa8888888888b:::."
 echo -e "    ::::dP::::::::88888888888::::::::Yb::::"
-echo -e "   ::::dP:::::::::Y888888888P:::::::::Yb::::          ${YELLOW}User:${NC}           $(whoami)"
+echo -e "   ::::dP:::::::::Y888888888P:::::::::Yb::::          ${YELLOW}User:${NC}           $USER"
 echo -e "  ::::d8:::::::::::Y8888888P:::::::::::8b::::         ${YELLOW}Hostname:${NC}       $(hostname)"
 echo -e " .::::88::::::::::::Y88888P::::::::::::88::::.        ${YELLOW}Distro:${NC}         $DISTRO_NAME $DISTRO_VERSION"
 echo -e " :::::Y8baaaaaaaaaa88P:T:Y88aaaaaaaaaad8P:::::        ${YELLOW}Kernel:${NC}         $(uname -r)"
@@ -127,15 +129,35 @@ echo "Executing tasks:"
 if is_sudo -eq 0; then
     if command -v apt-get > /dev/null; then
         echo_task "Installing apt packages"
-        apt_install "autojump"
+        apt_install "build-essential"
         apt_install "curl"
-        apt_install "htop"
+        apt_install "libbz2-dev"
+        apt_install "libffi-dev"
+        apt_install "liblzma-dev"
+        apt_install "libncurses5-dev"
+        apt_install "libreadline-dev"
+        apt_install "libsqlite3-dev"
+        apt_install "libssl-dev"
+        apt_install "libxml2-dev"
+        apt_install "libxmlsec1-dev"
+        apt_install "llvm"
+        apt_install "make"
+        apt_install "ssh"
+        apt_install "tk-dev"
+        apt_install "wget"
+        apt_install "xz-utils"
+        apt_install "zlib1g-dev"
+
         apt_install "python"
         apt_install "python-pip"
         apt_install "python3"
         apt_install "python3-pip"
         apt_install "tmux"
+        apt_install "tree"
         apt_install "vim"
+        apt_install "autojump"
+        apt_install "git"
+        apt_install "htop"
         apt_install "zsh"
     else
         echo_task "Skipping apt packages"
@@ -144,56 +166,14 @@ else
     echo_task "Skipping apt packages (not sudo)"
 fi
 
-# VIM
-echo_task "Setting up VIM config"
-ln -sf "$DOTFILES_DIR/vim/.vimrc" "$HOME/.vimrc"
-
-# Local ~/bin
-echo_task "Setup local bin"
-mkdir -p "$HOME/bin"
-for f in $DOTFILES_DIR/bin/*; do
-    [ -e "$filename" ] || continue
-
-    bin_filename=$(basename "$f")
-    echo_sub_task "$bin_filename"
-    ln -sf "$DOTFILES_DIR/bin/$bin_filename" "$HOME/bin/$bin_filename"
-done
-
-for f in $DOTFILES_DIR/scripts/bin/*; do
-    [ -e "$filename" ] || continue
-
-    bin_filename=$(basename "$f")
-    echo_sub_task "$bin_filename"
-    ln -sf "$DOTFILES_DIR/scripts/bin/$bin_filename" "$HOME/bin/$bin_filename"
-done
-
-# SYS files
-echo_task "Setup sys files"
-for f in $DOTFILES_DIR/sys/*; do
-    [ -e "$filename" ] || continue
-
-    sys_filename=$(basename "$f")
-    echo_sub_task "$sys_filename"
-    ln -sf "$DOTFILES_DIR/sys/$sys_filename" "$HOME/$sys_filename"
-done
-
-# Git
-echo_task "Setting up git"
-for f in $DOTFILES_DIR/git/*; do
-    [ -e "$filename" ] || continue
-
-    git_filename=$(basename "$f")
-    echo_sub_task "$git_filename"
-    ln -sf "$DOTFILES_DIR/git/$git_filename" "$HOME/$git_filename"
-done
 
 # ZSH
 echo_task "Setting up ZSH"
 if [[ "$SHELL" =~ .*zsh$ ]]; then
-    echo_task "ZSH is the current shell"
+    echo_sub_task "ZSH is the current shell"
 else
-    echo_task "Changing shell from ${SHELL} to zsh"
-    sudo chsh -s $(which zsh) "$USER"
+    echo_sub_task "Changing shell from ${SHELL} to zsh"
+    sudo usermod --shell $(which zsh) $(whoami)
     echo -e "\n\n${ORANGE}WARNING:${NC}: Please logout and log back in for your shell change to take affect and re-run the setup script."
     exit 1
 fi
@@ -206,9 +186,113 @@ else
    rm -rf "$HOME/.zshrc"
 fi
 
+echo_task "Symlinking ZSH config"
+
 ln -sf "$DOTFILES_DIR/zsh/.zshrc" "$HOME/.zshrc"
+echo_sub_task ".zshrc linked"
+
 ln -sf "$DOTFILES_DIR/zsh/.zsh_aliases" "$HOME/.zsh_aliases"
-ln -sf "$DOTFILES_DIR/zsh/.zsh_exports" "$HOME/.zsh_exports"
+echo_sub_task ".zsh_aliases linked"
+
+ln -sf "$DOTFILES_DIR/zsh/.zshenv" "$HOME/.zshenv"
+echo_sub_task ".zshenv linked"
+
+
+# VIM
+echo_task "Setting up VIM config"
+ln -sf "$DOTFILES_DIR/vim/.vimrc" "$HOME/.vimrc"
+
+
+# Local ~/bin
+echo_task "Setup local bin"
+mkdir -p "$HOME/bin"
+for f in $DOTFILES_DIR/bin/* $DOTFILES_DIR/bin/.[^.]*; do
+    [ -e "$f" ] || continue
+
+    bin_filename=$(basename "$f")
+    echo_sub_task "$bin_filename"
+    ln -sf "$DOTFILES_DIR/bin/$bin_filename" "$HOME/bin/$bin_filename"
+done
+
+for f in $DOTFILES_DIR/scripts/bin/* $DOTFILES_DIR/scripts/bin/.[^.]*; do
+    [ -e "$f" ] || continue
+
+    bin_filename=$(basename "$f")
+    echo_sub_task "$bin_filename"
+    ln -sf "$DOTFILES_DIR/scripts/bin/$bin_filename" "$HOME/bin/$bin_filename"
+done
+
+
+# SYS files
+echo_task "Setup sys files"
+for f in $DOTFILES_DIR/sys/* $DOTFILES_DIR/sys/.[^.]*; do
+    [ -e "$f" ] || continue
+
+    sys_filename=$(basename "$f")
+    echo_sub_task "$sys_filename"
+    ln -sf "$DOTFILES_DIR/sys/$sys_filename" "$HOME/$sys_filename"
+done
+
+
+# Git
+echo_task "Setting up git"
+for f in $DOTFILES_DIR/git/* $DOTFILES_DIR/git/.[^.]*; do
+    [ -e "$f" ] || continue
+
+    git_filename=$(basename "$f")
+    echo_sub_task "$git_filename"
+    ln -sf "$DOTFILES_DIR/git/$git_filename" "$HOME/$git_filename"
+done
+
+
+# Fonts
+echo_task "Fonts"
+if [ -d "$HOME/.fonts" ]; then
+    echo_sub_task "Symlink already exists"
+else
+    echo_sub_task "Creating symlink"
+    ln -sf "$REPO/fonts" "$HOME/.fonts"
+    if command -v fc-cache > /dev/null; then
+        echo_sub_task "Updating fc-cache"
+        fc-cache -f
+    else
+        echo_sub_task "Skipping fc-cache"
+    fi
+fi
+
+
+# Install AWS CLI
+if pip freeze | grep -q "awscli"; then
+    echo_task "awscli already installed"
+else
+    echo_task "Install awscli"
+    pip3 install --user awscli | sed 's/^/      /'
+fi
+
+
+# SSH Config
+if [ -f "$HOME/.aws/credentials" ]; then
+    echo_task "Applying SSH config"
+    ssh_result=$(ssh-config --apply)
+    echo_sub_task "${ssh_result}"
+else
+    add_warn "SSH config not applied because awscli is not installed and/or AWS credentials do not exist."
+fi
+
+
+# PYENV
+echo_task "Setting up pyenv"
+
+echo_sub_task "Fetching pyenv repo"
+git clone https://github.com/pyenv/pyenv.git ~/.pyenv
+
+echo_sub_task "Fetching pyenv repo"
+echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zshenv
+echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zshenv
+
+echo_sub_task "Fetching pyenv repo"
+echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> .zshenv
+
 
 # End script, display any warnings
 display_warns

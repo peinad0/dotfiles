@@ -1,19 +1,20 @@
 FROM ubuntu:16.04
 
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+
 # OS updates and install
 RUN apt-get -qq update && \
     apt-get install -qq -y \
-    	git \
-    	sudo \
-    	zsh
+    	apt-utils \
+    	sudo
 
 # Create test user and add to sudoers
-RUN useradd -m -s /bin/zsh tester
+RUN useradd -m -s /bin/bash tester
 RUN usermod -aG sudo tester
 RUN echo "tester   ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers
 
 # Add dotfiles and chown
-ADD . /home/tester/dotfiles
+COPY . /home/tester/dotfiles
 RUN chown -R tester:tester /home/tester
 
 # Switch testuser

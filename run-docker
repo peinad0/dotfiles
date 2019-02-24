@@ -1,3 +1,2 @@
 #!/bin/bash
-docker build -t peinado-dotfiles .
-docker run -it peinado-dotfiles
+docker build --no-cache -t peinado-dotfiles . && docker run -it peinado-dotfiles

@@ -1,5 +1,5 @@
 # Set the shell
-export SHELL=/bin/zsh
+export SHELL=$(which zsh)
 
 # Default editor
 export EDITOR='vim'
