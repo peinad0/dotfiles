@@ -5,7 +5,7 @@ export PATH=$HOME/bin:/usr/local/bin:$PATH
 export ZSH=$HOME/.oh-my-zsh
 
 # ZSH theme to display.
-ZSH_THEME="agnoster"
+ZSH_THEME="ys"
 
 # Enable command auto-correction.
 ENABLE_CORRECTION="true"
@@ -28,8 +28,10 @@ SPACESHIP_DOCKER_SHOW=false
 
 # Sourcing oh-my-zsh and other shell helpers
 source $ZSH/oh-my-zsh.sh
-source $HOME/.zsh_exports
 source $HOME/.zsh_aliases
 
 # Sourcing needed files
 source $HOME/.functions
+
+# Autojump
+source /usr/share/autojump/autojump.sh

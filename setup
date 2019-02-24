@@ -152,11 +152,12 @@ if is_sudo -eq 0; then
         apt_install "python-pip"
         apt_install "python3"
         apt_install "python3-pip"
+        apt_install "python-setuptools"
+        apt_install "python3-setuptools"
         apt_install "tmux"
         apt_install "tree"
         apt_install "vim"
         apt_install "autojump"
-        apt_install "git"
         apt_install "htop"
         apt_install "zsh"
     else
@@ -169,21 +170,12 @@ fi
 
 # ZSH
 echo_task "Setting up ZSH"
-if [[ "$SHELL" =~ .*zsh$ ]]; then
-    echo_sub_task "ZSH is the current shell"
-else
-    echo_sub_task "Changing shell from ${SHELL} to zsh"
-    sudo usermod --shell $(which zsh) $(whoami)
-    echo -e "\n\n${ORANGE}WARNING:${NC}: Please logout and log back in for your shell change to take affect and re-run the setup script."
-    exit 1
-fi
 
 if [ -d "$HOME/.oh-my-zsh" ]; then
    echo_sub_task "oh-my-zsh already installed"
 else
    echo_sub_task "Installing oh-my-zsh"
-   sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" || [ -d "$HOME/.oh-my-zsh" ]
-   rm -rf "$HOME/.zshrc"
+   git clone https://github.com/robbyrussell/oh-my-zsh $HOME/.oh-my-zsh
 fi
 
 echo_task "Symlinking ZSH config"
@@ -200,7 +192,13 @@ echo_sub_task ".zshenv linked"
 
 # VIM
 echo_task "Setting up VIM config"
-ln -sf "$DOTFILES_DIR/vim/.vimrc" "$HOME/.vimrc"
+
+echo_sub_task "Downloading gruvbox theme"
+curl -o "$DOTFILES_DIR/vim/colors/gruvbox.vim" https://raw.githubusercontent.com/morhetz/gruvbox/master/colors/gruvbox.vim
+
+echo_sub_task "Symlinking vim config"
+ln -sf "$DOTFILES_DIR/vim" "$HOME/.vim"
+ln -sf "$HOME/.vim/.vimrc" "$HOME/.vimrc"
 
 
 # Local ~/bin
@@ -245,13 +243,25 @@ for f in $DOTFILES_DIR/git/* $DOTFILES_DIR/git/.[^.]*; do
 done
 
 
+# tmux
+echo_task "Setting up tmux"
+for f in $DOTFILES_DIR/tmux/* $DOTFILES_DIR/tmux/.[^.]*; do
+    [ -e "$f" ] || continue
+
+    tmux_filename=$(basename "$f")
+    echo_sub_task "$tmux_filename"
+    ln -sf "$DOTFILES_DIR/tmux/$tmux_filename" "$HOME/$tmux_filename"
+done
+
+
+
 # Fonts
 echo_task "Fonts"
 if [ -d "$HOME/.fonts" ]; then
     echo_sub_task "Symlink already exists"
 else
     echo_sub_task "Creating symlink"
-    ln -sf "$REPO/fonts" "$HOME/.fonts"
+    ln -sf "$DOTFILES_DIR/fonts" "$HOME/.fonts"
     if command -v fc-cache > /dev/null; then
         echo_sub_task "Updating fc-cache"
         fc-cache -f
@@ -283,15 +293,13 @@ fi
 # PYENV
 echo_task "Setting up pyenv"
 
-echo_sub_task "Fetching pyenv repo"
-git clone https://github.com/pyenv/pyenv.git ~/.pyenv
-
-echo_sub_task "Fetching pyenv repo"
-echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zshenv
-echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zshenv
-
-echo_sub_task "Fetching pyenv repo"
-echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> .zshenv
+if [ -d "$HOME/.pyenv" ]; then
+   echo_sub_task "pyenv already installed"
+else
+   echo_sub_task "Installing pyenv"
+    echo_sub_task "Fetching pyenv repo"
+    git clone https://github.com/pyenv/pyenv.git $HOME/.pyenv
+fi
 
 
 # End script, display any warnings
