@@ -25,6 +25,6 @@ ENV HOME /home/tester
 WORKDIR /home/tester/dotfiles
 
 # Run setup
-RUN ./setup
+RUN ./install.sh
 
 CMD ["/bin/bash"]

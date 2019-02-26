@@ -147,10 +147,15 @@ if is_sudo -eq 0; then
         apt_install "wget"
         apt_install "xz-utils"
         apt_install "zlib1g-dev"
+        apt_install "apt-transport-https"
+        apt_install "ca-certificates"
+        apt_install "software-properties-common"
 
         apt_install "python"
-        apt_install "python-pip"
+        apt_install "python-dev"
         apt_install "python3"
+        apt_install "python3-dev"
+        apt_install "python-pip"
         apt_install "python3-pip"
         apt_install "python-setuptools"
         apt_install "python3-setuptools"
@@ -159,6 +164,9 @@ if is_sudo -eq 0; then
         apt_install "vim"
         apt_install "autojump"
         apt_install "htop"
+        apt_install "libxss1"
+        apt_install "libappindicator1"
+        apt_install "libindicator7"
         apt_install "zsh"
     else
         echo_task "Skipping apt packages"
@@ -198,7 +206,15 @@ curl -o "$DOTFILES_DIR/vim/colors/gruvbox.vim" https://raw.githubusercontent.com
 
 echo_sub_task "Symlinking vim config"
 ln -sf "$DOTFILES_DIR/vim" "$HOME/.vim"
-ln -sf "$HOME/.vim/.vimrc" "$HOME/.vimrc"
+ln -sf "$DOTFILES_DIR/vim/.vimrc" "$HOME/.vimrc"
+
+
+# Google Chrome
+echo_task "Setting up google chrome"
+
+echo_sub_task "Downloading google-chrome"
+wget --directory-prefix=/tmp/ https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+apt install /tmp/google-chrome*.deb
 
 
 # Local ~/bin
@@ -301,6 +317,14 @@ else
     git clone https://github.com/pyenv/pyenv.git $HOME/.pyenv
 fi
 
+
+# Docker
+# echo_task "Setting up docker"
+
+# curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+# sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+# apt update
+# apt_install docker-ce
 
 # End script, display any warnings
 display_warns
