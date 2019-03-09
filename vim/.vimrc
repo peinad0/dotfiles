@@ -2,8 +2,8 @@
 set nocompatible
 
 " autocomplete is getting much better :e <tab>...
-set wildchar=<Tab> wildmenu wildmode=full
-set wildignore=*.o,*.obj,*.bak,*.exe,*.swp
+set  wildchar=<Tab> wildmenu wildmode=full
+set    wildignore=*.o,*.obj,*.bak,*.exe,*.swp
 set ttimeout
 set ttimeoutlen=0
 
@@ -17,7 +17,6 @@ nnoremap <Leader>yy "+yy
 " Commands {{{1
 
 " remove trailing spaces
-" make a separate plugin for the commands
 command! RemoveTrailingSpaces :silent! %s/\v(\s+$)|(\r+$)//g<bar>
 		\:exe 'normal ``'<bar>
 		\:echo 'Remove trailing spaces and ^Ms.'
@@ -28,18 +27,6 @@ command! JustOneInnerSpace :let pos=getpos('.')<bar>
 		\:call setpos('.', pos)<bar>
 		\:nohl<bar>
 		\:echo 'Just one space'
-
-command! CapitalizeWord :let pos=getpos('.')<bar>
-		\:exe 'normal guiw~'<bar>
-		\:call setpos('.', pos)
-
-command! UppercaseWord :let pos=getpos('.')<bar>
-		\:exe 'normal gUiw'<bar>
-		\:call setpos('.', pos)
-
-command! LowercaseWord :let pos=getpos('.')<bar>
-		\:exe 'normal guiw'<bar>
-		\:call setpos('.', pos)
 
 " Helps force plugins to load correctly when it is turned back on below
 filetype off
@@ -60,8 +47,8 @@ Plug 'morhetz/gruvbox'
   colorscheme gruvbox
   let g:gruvbox_invert_selection = 0
   let g:gruvbox_contrast_dark = 'hard'
-  let g:gruvbox_italicize_comments = 1
-  let g:gruvbox_italicize_strings = 1
+  let g:gruvbox_italicize_comments = 0
+  let g:gruvbox_italicize_strings = 0
 " }}}
 
 " Initialize plugin system
