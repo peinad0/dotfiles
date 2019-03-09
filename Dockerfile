@@ -6,6 +6,7 @@ RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selectio
 RUN apt-get -qq update && \
     apt-get install -qq -y \
     	apt-utils \
+    	curl \
     	sudo
 
 # Create test user and add to sudoers
@@ -25,6 +26,6 @@ ENV HOME /home/tester
 WORKDIR /home/tester/dotfiles
 
 # Run setup
-RUN ./install.sh
+RUN  curl -o- https://raw.githubusercontent.com/peinad0/dotfiles/master/install.sh | bash
 
 CMD ["/bin/bash"]
