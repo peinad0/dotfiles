@@ -30,3 +30,5 @@ alias ips="ifconfig -a | grep 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9
 
 # Prevent ZSH from throwing autocorrect for weird-looking Sass commands
 alias sass='nocorrect sass'
+
+alias acestream="acestreamplayer.engine --client-console && acestreamplayer"

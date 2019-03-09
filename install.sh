@@ -1,9 +1,6 @@
 #!/bin/bash
 set -e
 
-function check_apt_installed() {
-    return dpkg -l "$1" &> /dev/null
-}
 function apt_install() {
     if dpkg --get-selections | grep -q "^$1[[:space:]]*install$" >/dev/null; then
     	echo "$1 is already installed"

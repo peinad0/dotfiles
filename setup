@@ -129,45 +129,35 @@ echo "Executing tasks:"
 if is_sudo -eq 0; then
     if command -v apt-get > /dev/null; then
         echo_task "Installing apt packages"
-        apt_install "build-essential"
+
+        # Others
+        apt_install "tmux"
+        apt_install "tree"
+        apt_install "vim"
+        apt_install "htop"
+        apt_install "zsh"
         apt_install "curl"
-        apt_install "libbz2-dev"
-        apt_install "libffi-dev"
-        apt_install "liblzma-dev"
-        apt_install "libncurses5-dev"
-        apt_install "libreadline-dev"
-        apt_install "libsqlite3-dev"
-        apt_install "libssl-dev"
-        apt_install "libxml2-dev"
-        apt_install "libxmlsec1-dev"
-        apt_install "llvm"
         apt_install "make"
         apt_install "ssh"
-        apt_install "tk-dev"
         apt_install "wget"
-        apt_install "xz-utils"
-        apt_install "zlib1g-dev"
+
+        # Needed for docker
         apt_install "apt-transport-https"
         apt_install "ca-certificates"
         apt_install "software-properties-common"
 
-        apt_install "python"
-        apt_install "python-dev"
+        # Python
+        apt_install "build-essential"
+        apt_install "libssl-dev"
+        apt_install "libffi-dev"
         apt_install "python3"
         apt_install "python3-dev"
-        apt_install "python-pip"
+        apt_install "python3-venv"
         apt_install "python3-pip"
-        apt_install "python-setuptools"
-        apt_install "python3-setuptools"
-        apt_install "tmux"
-        apt_install "tree"
-        apt_install "vim"
-        apt_install "autojump"
-        apt_install "htop"
-        apt_install "libxss1"
-        apt_install "libappindicator1"
-        apt_install "libindicator7"
-        apt_install "zsh"
+        apt_install "python"
+        apt_install "python-dev"
+        apt_install "python-pip"
+
     else
         echo_task "Skipping apt packages"
     fi
@@ -201,20 +191,12 @@ echo_sub_task ".zshenv linked"
 # VIM
 echo_task "Setting up VIM config"
 
-echo_sub_task "Downloading gruvbox theme"
-curl -o "$DOTFILES_DIR/vim/colors/gruvbox.vim" https://raw.githubusercontent.com/morhetz/gruvbox/master/colors/gruvbox.vim
+echo_sub_task "Downloading vim-plug"
+curl -fLo $DOTFILES_DIR/vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
 echo_sub_task "Symlinking vim config"
-ln -sf "$DOTFILES_DIR/vim" "$HOME/.vim"
+ln -s "$DOTFILES_DIR/vim" "$HOME/.vim"
 ln -sf "$DOTFILES_DIR/vim/.vimrc" "$HOME/.vimrc"
-
-
-# Google Chrome
-echo_task "Setting up google chrome"
-
-echo_sub_task "Downloading google-chrome"
-wget --directory-prefix=/tmp/ https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-apt install /tmp/google-chrome*.deb
 
 
 # Local ~/bin
@@ -270,61 +252,63 @@ for f in $DOTFILES_DIR/tmux/* $DOTFILES_DIR/tmux/.[^.]*; do
 done
 
 
-
-# Fonts
-echo_task "Fonts"
-if [ -d "$HOME/.fonts" ]; then
-    echo_sub_task "Symlink already exists"
-else
-    echo_sub_task "Creating symlink"
-    ln -sf "$DOTFILES_DIR/fonts" "$HOME/.fonts"
-    if command -v fc-cache > /dev/null; then
-        echo_sub_task "Updating fc-cache"
-        fc-cache -f
-    else
-        echo_sub_task "Skipping fc-cache"
-    fi
-fi
-
-
 # Install AWS CLI
-if pip freeze | grep -q "awscli"; then
-    echo_task "awscli already installed"
-else
-    echo_task "Install awscli"
-    pip3 install --user awscli | sed 's/^/      /'
-fi
+#if pip freeze | grep -q "awscli"; then
+    #echo_task "awscli already installed"
+#else
+    #echo_task "Install awscli"
+    #pip3 install --user awscli | sed 's/^/      /'
+#fi
 
 
 # SSH Config
-if [ -f "$HOME/.aws/credentials" ]; then
-    echo_task "Applying SSH config"
-    ssh_result=$(ssh-config --apply)
-    echo_sub_task "${ssh_result}"
-else
-    add_warn "SSH config not applied because awscli is not installed and/or AWS credentials do not exist."
-fi
+#if [ -f "$HOME/.aws/credentials" ]; then
+    #echo_task "Applying SSH config"
+    #ssh_result=$(ssh-config --apply)
+    #echo_sub_task "${ssh_result}"
+#else
+    #add_warn "SSH config not applied because awscli is not installed and/or AWS credentials do not exist."
+#fi
 
 
 # PYENV
-echo_task "Setting up pyenv"
+#echo_task "Setting up pyenv"
 
-if [ -d "$HOME/.pyenv" ]; then
-   echo_sub_task "pyenv already installed"
-else
-   echo_sub_task "Installing pyenv"
-    echo_sub_task "Fetching pyenv repo"
-    git clone https://github.com/pyenv/pyenv.git $HOME/.pyenv
-fi
+#if [ -d "$HOME/.pyenv" ]; then
+   #echo_sub_task "pyenv already installed"
+#else
+    #echo_sub_task "Installing pyenv"
+    #echo_sub_task "Fetching pyenv repo"
+    #git clone https://github.com/pyenv/pyenv.git $HOME/.pyenv
+#fi
 
 
 # Docker
-# echo_task "Setting up docker"
+echo_task "Setting up docker"
 
-# curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-# sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-# apt update
-# apt_install docker-ce
+if hash docker 2>/dev/null; then
+    echo_sub_task "docker already installed"
+else
+    echo_sub_task "Adding docker repository"
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(. /etc/os-release; echo "$UBUNTU_CODENAME") stable"
+    sudo apt-get update
+    apt_install docker-ce
+    sudo usermod -aG docker ${USER}
+    # You might need to run this if cannot run docker without sudo
+    # sudo chmod a+rwx /var/run/docker.sock
+    # sudo chmod a+rwx /var/run/docker.pid
+fi
+
+
+if hash docker-compose 2>/dev/null; then
+    echo_sub_task "docker-compose already installed"
+else
+    echo_sub_task "Installing docker-compose"
+    curl -L "https://github.com/docker/compose/releases/download/1.23.1/docker-compose-$(uname -s)-$(uname -m)" -o $HOME/bin/docker-compose
+    chmod +x $HOME/bin/docker-compose
+fi
+
 
 # End script, display any warnings
 display_warns
