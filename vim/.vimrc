@@ -43,13 +43,6 @@ Plug 'christoomey/vim-tmux-navigator'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'morhetz/gruvbox'
-" {{{
-  colorscheme gruvbox
-  let g:gruvbox_invert_selection = 0
-  let g:gruvbox_contrast_dark = 'hard'
-  let g:gruvbox_italicize_comments = 0
-  let g:gruvbox_italicize_strings = 0
-" }}}
 
 " Initialize plugin system
 call plug#end()
@@ -152,3 +145,10 @@ noremap <S-h> gT
 set t_Co=256
 set background=dark
 
+" {{{
+  colorscheme gruvbox
+  let g:gruvbox_invert_selection = 0
+  let g:gruvbox_contrast_dark = 'hard'
+  let g:gruvbox_italicize_comments = 0
+  let g:gruvbox_italicize_strings = 0
+" }}}

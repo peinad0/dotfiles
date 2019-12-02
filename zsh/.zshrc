@@ -20,7 +20,7 @@ DISABLE_UNTRACKED_FILES_DIRTY="true"
 HIST_STAMPS="yyyy-mm-dd"
 
 # Oh-my-zsh plugins
-plugins=( git docker cp zsh-syntax-highlighting pyenv)
+plugins=( git docker cp pyenv)
 
 # Spaceship settings
 SPACESHIP_PROMPT_ORDER=( time user host dir git )
@@ -33,5 +33,4 @@ source $HOME/.zsh_aliases
 # Sourcing needed files
 source $HOME/.functions
 
-# Autojump
-source /usr/share/autojump/autojump.sh
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

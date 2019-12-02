@@ -134,6 +134,7 @@ if is_sudo -eq 0; then
         apt_install "tmux"
         apt_install "tree"
         apt_install "vim"
+        apt_install "vim-gtk"  #To enable vim clipboard
         apt_install "htop"
         apt_install "zsh"
         apt_install "curl"
@@ -195,7 +196,7 @@ echo_sub_task "Downloading vim-plug"
 curl -fLo $DOTFILES_DIR/vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
 echo_sub_task "Symlinking vim config"
-ln -s "$DOTFILES_DIR/vim" "$HOME/.vim"
+ln -sf "$DOTFILES_DIR/vim" "$HOME/.vim"
 ln -sf "$DOTFILES_DIR/vim/.vimrc" "$HOME/.vimrc"
 
 
@@ -291,7 +292,9 @@ if hash docker 2>/dev/null; then
 else
     echo_sub_task "Adding docker repository"
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(. /etc/os-release; echo "$UBUNTU_CODENAME") stable"
+    # sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(. /etc/os-release; echo "$UBUNTU_CODENAME") stable"
+    # Fix for ubuntu 19.10
+    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu disco stable"
     sudo apt-get update
     apt_install docker-ce
     sudo usermod -aG docker ${USER}
@@ -305,7 +308,7 @@ if hash docker-compose 2>/dev/null; then
     echo_sub_task "docker-compose already installed"
 else
     echo_sub_task "Installing docker-compose"
-    curl -L "https://github.com/docker/compose/releases/download/1.23.1/docker-compose-$(uname -s)-$(uname -m)" -o $HOME/bin/docker-compose
+    curl -L "https://github.com/docker/compose/releases/download/1.25.0/docker-compose-$(uname -s)-$(uname -m)" -o $HOME/bin/docker-compose
     chmod +x $HOME/bin/docker-compose
 fi
 
